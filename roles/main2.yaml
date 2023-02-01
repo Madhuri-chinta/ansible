@@ -1,0 +1,6 @@
+---
+- name: creating role
+  hosts: all
+  become: yes
+  roles:
+    - madhu

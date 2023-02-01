@@ -1,0 +1,54 @@
+---
+- name: install dotnet on ubuntu
+  hosts: all
+  become: yes
+  tasks:
+    - name: install microsoft package on ubuntu
+      ansible.builtin.get_url:
+        url: "{{ dotnet_url_ubuntu }}"
+        dest: /tmp
+        mode: 777
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: install microsoft package on centos
+      ansible.builtin.get_url:
+        url: "{{ dotnet_url_centos }}"
+        dest: /tmp
+        mode: 777
+      when: ansible_facts['distribution'] == "CentOS"
+    - name: install microsoft debian package
+      ansible.builtin.apt:
+        deb: /tmp/packages-microsoft-prod.deb
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: install microsoft rpm package
+      ansible.builtin.yum:
+        name: /tmp/packages-microsoft-prod.rpm
+        state: present
+      when: ansible_facts['distribution'] == "CentOS"
+    - name: Install dotnetcore SDK on ubuntu
+      ansible.builtin.package:
+        name:
+          - "{{ transport_url }}"
+          - "{{ sdk_version }}"
+        state: present
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: Install dotnetcore SDK on centos
+      ansible.builtin.package:
+        name:
+          - "{{ transport_url }}"
+          - "{{ sdk_version }}"
+        state: present
+      when: ansible_facts['distribution'] == "CentOS"
+    - name: Install dotnetcore runtime on ubuntu
+      ansible.builtin.package:
+        name:
+          - "{{ transport_url }}"
+          - "{{ runtime_version }}"
+        state: present
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: Install dotnetcore runtime on centos
+      ansible.builtin.package:
+        name:
+          - "{{ transport_url }}"
+          - "{{ runtime_version }}"
+        state: present
+      when: ansible_facts['distribution'] == "CentOS"

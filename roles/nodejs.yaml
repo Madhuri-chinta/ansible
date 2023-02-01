@@ -1,0 +1,23 @@
+---
+- name: install nodejs on ubuntu
+  hosts: all
+  become: yes
+  tasks:
+    - name: shellfile in ubuntu
+      ansible.builtin.shell: curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash - 
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: shellfile in centos
+      ansible.builtin.shell: curl -sL https://rpm.nodesource.com/setup_16.x | sudo bash -
+      when: ansible_facts['distribution'] == "CentOS"
+    - name: install nodejs in ubuntu
+      ansible.builtin.package:
+        name: nodejs
+        state: present
+        update_cache: yes
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: install nodejs in centos
+      ansible.builtin.package:
+        name: nodejs
+        state: present
+        update_cache: yes
+      when: ansible_facts['distribution'] == "CentOS"

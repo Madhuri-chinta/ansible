@@ -1,0 +1,15 @@
+---
+all:
+  children:
+    webserver:
+      hosts:
+        172.31.45.167:
+          dotnet_url_ubuntu: https://packages.microsoft.com/config/ubuntu/22.10/packages-microsoft-prod.deb 
+          transport_url: aspnetcore-runtime-7.0
+          sdk_version: dotnet-sdk-7.0 
+          runtime_version: dotnet-runtime-7.0
+        172.31.35.22:
+          dotnet_url_centos: https://packages.microsoft.com/config/centos/7/packages-microsoft-prod.rpm 
+          transport_url: aspnetcore-runtime-7.0
+          sdk_version: dotnet-sdk-7.0 
+          runtime_version: dotnet-runtime-7.0
