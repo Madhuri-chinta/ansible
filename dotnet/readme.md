@@ -25,9 +25,8 @@ sudo yum install dotnet-runtime-7.0
 dotnet --version
 
 ```
-* Write single playbook for the this applicatio
-  --------------------------------------------- both ubuntu and centos :
-  ----------------------
+* Write single playbook for the this application both ubuntu and centos :
+  ---------------------------------------------------------------------
 ```yaml
 ---
 - name: install dotnet on ubuntu
