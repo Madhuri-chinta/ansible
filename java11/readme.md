@@ -45,15 +45,8 @@ java --version
 ![Preview](./Images/java1.png)
 
 * Applying ansible role
-![Preview](./Images/java2.png)
+![Preview](./Images/java2.PNG)
 
-```yaml
-- name: install java11
-  ansible.builtin.package:
-    name: "{{ java_package_name }}"
-    update_cache: yes
-    state: present
-```
 * Write a ansible playbook for the role
 ```yaml
 ---
