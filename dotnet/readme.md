@@ -105,7 +105,9 @@ all:
 ```
 * Create role in ansinle
 ![Preview](./Images/dotnet1.png)  
+
 * Applying ansible role
+
 ![Preview](Images/dotnet2.png)
 ```yaml
 - name: install microsoft package on ubuntu
