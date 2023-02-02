@@ -169,7 +169,9 @@ all:
 ```
 * To run this playbook in ansible master node
 ![Preview](Images/dotnet3.png)
+
 * Output of the application 
+
 ![Preview](Images/dotnet4.png) in ubuntu
 ![Preview](Images/dotnet5.png) in centos    
 
