@@ -171,7 +171,7 @@ all:
 ![Preview](Images/dotnet3.png)
 * Output of the application 
 ![Preview](Images/dotnet4.png) in ubuntu
-![Preview](Images/dotnet5git .png) in centos    
+![Preview](Images/dotnet5.png) in centos    
 
            
        
