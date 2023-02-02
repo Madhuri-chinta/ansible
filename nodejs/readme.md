@@ -53,6 +53,7 @@ node -v
 ![Preview](./images/node1.png)
 
 * Applying ansible role
+
 ![Preview](./images/node2.png)
 
 * Write a ansible playbook for the role
