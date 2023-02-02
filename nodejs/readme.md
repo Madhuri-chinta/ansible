@@ -28,22 +28,25 @@ node -v
   hosts: all
   become: yes
   tasks:
-    - name: shellfile
-      ansible.builtin.shell: "{{ Nodejs_Package_name }}"
-    - name: install nodejs in ubuntu
+    - name: shellfile in ubuntu
+      ansible.builtin.shell: curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash - 
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: shellfile in centos
+      ansible.builtin.shell: curl -sL https://rpm.nodesource.com/setup_16.x | sudo bash -
+      when: ansible_facts['distribution'] == "CentOS"
+    - name: install nodejs 
       ansible.builtin.package:
-        name: "{{ Nodejs_Package }}"
+        name: nodejs
         state: present
+    
+
 ```
-* Hostfile of the dotnet application:
+* Hostfile of the nodejs application:
   ------------------------------------
 ```yaml
 [appservers]
-172.31.45.167 Nodejs_Package_name=curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
-172.31.35.22 Nodejs_Package_name=curl -sL https://rpm.nodesource.com/setup_16.x | sudo bash -
-
-[appservers_vars]
-Nodejs_Package=nodejs
+172.31.34.151
+172.31.43.198  
 
 ```
 * Create role in ansinle
