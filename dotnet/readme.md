@@ -83,8 +83,8 @@ dotnet --version
         state: present
       when: ansible_facts['distribution'] == "CentOS"  
 ```
-* Hostfile of the dotnet playbook:
-  --------------------------------
+* Hostfile of the dotnet application:
+  ------------------------------------
 ```yaml
 ---
 all:
