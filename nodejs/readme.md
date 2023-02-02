@@ -53,7 +53,6 @@ node -v
 ![Preview](./images/node1.png)
 
 * Applying ansible role
-
 ![Preview](./images/node2.png)
 
 * Write a ansible playbook for the role
@@ -69,6 +68,7 @@ node -v
 ![Preview](./images/node3.png)
 
 * Output of the application
+
 ![Preview](./images/node4.png) in ubuntu
 ![Preview](./images/node5.png) in centos 
     
