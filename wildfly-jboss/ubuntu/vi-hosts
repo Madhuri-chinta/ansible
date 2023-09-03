@@ -1,0 +1,17 @@
+172.31.15.157
+localhost
+
+[ubuntu]
+172.31.2.191 name=node1
+localhost name=mcn group=none
+
+[centos] 
+172.31.15.157 name=node2
+
+[webservers]
+172.31.2.191 name=node1
+172.31.15.157 name=node2
+
+[webservers:vars]
+group=webserver
+

@@ -1,0 +1,26 @@
+---
+- name: install java11
+  hosts: all
+  become: yes
+  tasks:
+    - name: install java11
+      ansible.builtin.package:
+        name: "{{ java_package_name }}"
+        update_cache: yes
+        state: present
+
+
+
+[appservers]
+172.31.45.167 java_package_name=openjdk-11-jdk 
+172.31.35.22 java_package_name=java-11-openjdk-devel
+
+
+
+    
+
+
+
+
+
+

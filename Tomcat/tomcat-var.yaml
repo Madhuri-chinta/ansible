@@ -1,0 +1,112 @@
+---
+- name: install tomcat on ubuntu
+  hosts: all
+  become: yes
+  vars:
+    java_version: openjdk-11-jdk
+    group_name: tomcat
+    user_name: tomcat
+    shell_name: /bin/false
+    tomcat_home: /opt/tomcat
+    tar_file: https://www-eu.apache.org/dist/tomcat/tomcat-10/v10.1.5/bin/apache-tomcat-10.1.5.tar.gz
+    owner_name: tomcat
+    unit_file: /etc/systemd/system/tomcat.service
+    service_name: tomcat.service
+    tomcat_user: tomcat-users.xml
+    tomcat_manager: manager.xml
+    tomcat_hostmanager: host-manager.xml
+    user_dest: /opt/tomcat/latest/conf/tomcat-users.xml
+    manager_dest: /opt/tomcat/latest/webapps/manager/META-INF/context.xml
+    hostmanager_dest: /opt/tomcat/latest/webapps/host-manager/META-INF/context.xml
+  tasks:
+    - name: install openjdk-11-jdk
+      ansible.builtin.apt:
+        name: "{{ java_version }}"
+        update_cache: yes
+        state: present
+    - name: create group
+      ansible.builtin.group:
+        name: "{{ group_name }}" 
+        state: present
+    - name: create user
+      ansible.builtin.user:
+        name: "{{ user_name }}"
+        group: "{{ group_name }}" 
+        shell: "{{ shell_name }}"
+        home: "{{ tomcat_home }}"
+    #- name: untar the file
+     # ansible.builtin.unarchive:
+      #  src: "{{ tar_file }}"
+       # dest: "{{ tomcat_home }}"
+        #remote_src: yes
+      notify: untar the file   
+    - name: create a symbolic link
+      ansible.builtin.file:
+        src: "{{ tomcat_home }}/apache-tomcat-10.1.5"
+        dest: "{{ tomcat_home }}/latest"
+        owner: "{{ owner_name }}"
+        group: "{{ group_name }}" 
+        state: link
+   # - name: Change file ownership, group and permissions
+    #  ansible.builtin.file:
+     #   path: "{{ tomcat_home }}"
+      #  owner: "{{ owner_name }}"
+       # group: "{{ group_name }}" 
+        #recurse: true
+       # state: directory
+      notify: Change file ownership, group and permissions 
+    #- name: shell scripts inside the Tomcat bin directory must be executable in order
+     # ansible.builtin.command: sudo sh -c 'chmod +x /opt/tomcat/latest/bin/*.sh'
+      notify: shell scripts inside the Tomcat bin directory must be executable in order
+    - name: create a tomcat.service unit file
+      ansible.builtin.copy:
+        src: "{{ service_name }}"
+        dest: "{{ unit_file }}"
+        owner: "{{ owner_name }}"
+        group: "{{ group_name }}" 
+    - name: Restart and enable tomcat
+      ansible.builtin.systemd:
+        name: "{{ service_name }}"
+        daemon_reload: yes
+        state: started
+        enabled: yes
+    - name: create a tomcat-users.xml
+      ansible.builtin.copy:
+        src: "{{ tomcat_user }}"
+        dest: "{{ user_dest }}"
+        owner: "{{ owner_name }}"
+        group: "{{ group_name }}" 
+    - name: create a manager.xml
+      ansible.builtin.copy:
+        src: "{{ tomcat_manager }}"
+        dest: "{{ manager_dest }}"
+        owner: "{{ owner_name }}"
+        group: "{{ group_name }}" 
+    - name: create a host-manager.xml
+      ansible.builtin.copy:
+        src: "{{ tomcat_hostmanager }}"
+        dest: "{{ hostmanager_dest }}"
+        owner: "{{ owner_name }}"
+        group: "{{ group_name }}" 
+    - name: restart tomcat
+      ansible.builtin.systemd:
+        name: "{{ service_name }}"
+        state: started
+        enabled: yes
+  handlers:
+    - name: untar the file
+      ansible.builtin.unarchive:
+        src: "{{ tar_file }}"
+        dest: "{{ tomcat_home }}"
+        remote_src: yes
+    - name: Change file ownership, group and permissions
+      ansible.builtin.file:
+        path: "{{ tomcat_home }}"
+        owner: "{{ owner_name }}"
+        group: "{{ group_name }}" 
+        recurse: true
+        state: directory
+    - name: shell scripts inside the Tomcat bin directory must be executable in order
+      ansible.builtin.command: sudo sh -c 'chmod +x /opt/tomcat/latest/bin/*.sh'        
+
+            

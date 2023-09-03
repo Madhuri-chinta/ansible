@@ -1,0 +1,10 @@
+frontend www-http
+        bind *:80
+        mode http
+        default_backend apache
+
+backend apache
+        mode http
+        balance roundrobin
+        server nginx  172.31.46.246:80 check
+        server apache 172.31.42.54:80 check

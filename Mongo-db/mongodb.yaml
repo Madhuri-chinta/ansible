@@ -1,0 +1,36 @@
+---
+- name: install mongodb on ubuntu
+  hosts: all
+  become: yes
+  tasks:
+    - name: installing gnupg
+      ansible.builtin.apt:
+        name: gnupg
+        update_cache: yes
+        state: present  
+    - name: adding keys
+      ansible.builtin.apt_key:
+        url: https://www.mongodb.org/static/pgp/server-5.0.asc
+        state: present    
+    - name: get url
+      ansible.builtin.get_url:
+        url: https://www.mongodb.org/static/pgp/server-5.0.asc
+        dest: /tmp
+        mode: 777
+    - name: add repository
+      ansible.builtin.apt_repository:
+        repo: "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/5.0 multiverse" 
+        state: present
+        filename: mongodb-org-4.4.list
+    - name: installing mongoDB
+      ansible.builtin.apt:
+        name: mongodb-org
+        update_cache: yes
+        state: present 
+    - name: Start service mongodb
+      ansible.builtin.service:
+        name: mongodb
+        state: started      
+        
+         
+       

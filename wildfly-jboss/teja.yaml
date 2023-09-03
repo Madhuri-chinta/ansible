@@ -1,0 +1,80 @@
+---
+- name: installing and configuring wildfly
+  become: yes
+  hosts: all
+  tasks:
+    - name: installing jdk-11 curl and wget
+      ansible.builtin.apt:
+        name:
+          - openjdk-11-jdk
+          - curl
+          - wget
+        update_cache: yes
+        state: present
+    - name: un-tar in wildfly
+      ansible.builtin.unarchive:
+        src: https://github.com/wildfly/wildfly/releases/download/26.1.2.Final/wildfly-26.1.2.Final.tar.gz
+        dest: /tmp/
+        remote_src: yes
+    - name: Create a directory  wildfly in /opt/
+      ansible.builtin.file:
+        path: /opt/wildfly
+        state: directory
+        mode: '0755'
+    - name: copy files to /opt/wildfly
+      ansible.builtin.copy:
+        src: /tmp/wildfly-26.1.2.Final/
+        dest: /opt/wildfly
+        remote_src: yes
+    - name: remove wildfly-26.1.2.Final from tmp
+      ansible.builtin.file:
+        path: /tmp/wildfly-26.1.2.Final/
+        state: absent
+    - name: create wildfly group as system group
+      ansible.builtin.group:
+        name: wildfly
+        system: yes
+        state: present
+    - name: create user wildfly
+      ansible.builtin.user:
+        name: wildfly
+        group: wildfly
+        home: /opt/wildfly
+        system: yes
+        shell : /sbin/nologin
+    - name: Create a directory wildfly in /etc/
+      ansible.builtin.file:
+        path: /etc/wildfly
+        state: directory
+        mode: '0755'
+    - name: copying necessary
+      ansible.builtin.copy:
+        src: /opt/wildfly/docs/contrib/scripts/systemd/wildfly.conf
+        dest: /etc/wildfly/
+    - name: copying necessary
+      ansible.builtin.copy:
+        src: /opt/wildfly/docs/contrib/scripts/systemd/wildfly.service
+        dest: /etc/systemd/system/
+    - name: copying necessary
+      ansible.builtin.copy:
+        src: /opt/wildfly/docs/contrib/scripts/systemd/launch.sh
+        dest: /opt/wildfly/bin/
+    - name: changing file permissions of launch.sh
+      ansible.builtin.file:
+        path: /opt/wildfly/bin/launch.sh
+        state: file
+        mode: '0755'
+    - name: changing owner of /opt/wildfly
+      ansible.builtin.file:
+        path: /opt/wildfly
+        owner: wildfly
+        group: wildfly
+        recurse: yes
+    - name: reloading daemon
+      ansible.builtin.command:
+        cmd: systemctl daemon-reload
+    - name: start & enable wildfly service
+      ansible.builtin.systemd:
+        name: wildfly
+        enabled: yes
+        state: started

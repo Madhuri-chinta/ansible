@@ -1,0 +1,45 @@
+---
+- name: install apache server on ubuntu
+  hosts: all
+  become: yes
+  vars:
+    app_name: apache2
+  tasks:
+    - name: install apache2
+      ansible.builtin.apt:
+        name: "{{ app_name }}"
+        update_cache: yes
+        state: present
+
+
+
+
+
+
+
+---
+- name: install php server on ubuntu
+  hosts: all
+  become: yes
+  vars:
+    app_name: php
+    info_name: info.php
+  tasks:
+    - name: install php
+      ansible.builtin.apt:
+        name: "{{ app_name }}"
+        update_cache: yes
+        state: present
+    - name: create info.php
+      ansible.builtin.copy:
+        src: "{{ info_name }}"
+        dest: /var/www/html/info.php
+         
+          
+       
+
+
+
+
+
+

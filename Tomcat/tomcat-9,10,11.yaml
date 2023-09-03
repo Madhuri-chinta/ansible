@@ -1,0 +1,78 @@
+---
+- name: install tomcat on ubuntu
+  hosts: all
+  become: yes
+  tasks:
+    - name: install openjdk-11-jdk
+      ansible.builtin.apt:
+        name: openjdk-11-jdk
+        update_cache: yes
+        state: present
+    - name: create group
+      ansible.builtin.group:
+        name: tomcat
+        state: present
+    - name: create user
+      ansible.builtin.user:
+        name: tomcat
+        group: tomcat
+        shell: /bin/false
+        home: /opt/tomcat
+    - name: untar the file
+      ansible.builtin.unarchive:
+        src: https://www-eu.apache.org/dist/tomcat/tomcat-10/v10.1.5/bin/apache-tomcat-10.1.5.tar.gz
+        dest: /opt/tomcat
+        remote_src: yes
+    - name: create a symbolic link
+      ansible.builtin.file:
+        src: /opt/tomcat/apache-tomcat-10.1.5
+        dest: /opt/tomcat/latest
+        owner: tomcat
+        group: tomcat
+        state: link
+    - name: Change file ownership, group and permissions
+      ansible.builtin.file:
+        path: /opt/tomcat
+        owner: tomcat
+        group: tomcat
+        recurse: true
+        state: directory
+    - name: shell scripts inside the Tomcat bin directory must be executable in order
+      ansible.builtin.command: sudo sh -c 'chmod +x /opt/tomcat/latest/bin/*.sh'
+    - name: create a tomcat.service unit file
+      ansible.builtin.copy:
+        src: tomcat.service
+        dest: /etc/systemd/system/tomcat.service
+        owner: tomcat
+        group: tomcat
+    - name: Restart and enable tomcat
+      ansible.builtin.systemd:
+        name: tomcat.service
+        daemon_reload: yes
+        state: started
+        enabled: yes
+    - name: create a tomcat-users.xml
+      ansible.builtin.copy:
+        src: tomcat-users.xml
+        dest: /opt/tomcat/latest/conf/tomcat-users.xml
+        owner: tomcat
+        group: tomcat
+    - name: create a manager.xml
+      ansible.builtin.copy:
+        src: manager.xml
+        dest: /opt/tomcat/latest/webapps/manager/META-INF/context.xml
+        owner: tomcat
+        group: tomcat
+    - name: create a host-manager.xml
+      ansible.builtin.copy:
+        src: host-manager.xml
+        dest: /opt/tomcat/latest/webapps/host-manager/META-INF/context.xml
+        owner: tomcat
+        group: tomcat
+    - name: restart tomcat
+      ansible.builtin.systemd:
+        name: tomcat.service
+        state: started
+        enabled: yes      
+        
+            

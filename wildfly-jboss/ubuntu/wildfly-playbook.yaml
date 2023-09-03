@@ -1,0 +1,72 @@
+---
+-  name: install wildfly application on ubuntu
+   hosts: all
+   become: yes
+   tasks:
+     - name: install openjdk-11-jdk curl wget
+       ansible.builtin.apt:
+         name: 
+           - openjdk-11-jdk
+           - curl
+           - wget
+         update_cache: yes
+         state: present
+     - name: create group
+       ansible.builtin.group:
+         name: wildfly
+         state: present
+     - name: create user
+       ansible.builtin.user:
+         name: wildfly
+         shell: /sbin/nologin wildfly
+         groups: wildfly
+         create_home: yes
+         home: /opt/wildfly  
+     - name: untar the file
+       ansible.builtin.unarchive:
+         src: https://download.jboss.org/wildfly/16.0.0.Final/wildfly-16.0.0.Final.tar.gz
+         dest: /opt/
+         remote_src: yes
+     - name: change ownership permissions
+       ansible.builtin.file:
+         src: /wildfly
+         dest: /opt/wildfly
+         owner: wildfly
+         group: wildfly
+         state: hard
+         recurse: yes
+     - name: make a directory
+       ansible.builtin.file:
+         path: /etc/wildfly
+         state: directory
+         mode: '0755'
+     - name: copy config files
+       ansible.builtin.copy: 
+         src: /opt/wildfly/docs/contrib/scripts/systemd/wildfly.conf
+         dest: /etc/wildfly/
+         owner: wildfly
+         group: wildfly
+         mode: 'o644'
+     - name: copy sh files
+       ansible.builtin.copy:
+         src: /opt/wildfly/docs/contib/scripts/systemd/launch.sh
+         dest: /opt/wildfly/bin/
+         owner: wildfly
+         group: wildfly
+         mode: '0644'
+     - name: give permissions bin in sh
+       ansible.builtin.command: sudo sh -c 'chmod +x /opt/wildfly/bin/*.sh'
+     - name: copy service files
+       ansible.builtin.copy: 
+         src: /opt/wildfly/docs/contrib/scripts/systemd/wildfly.service
+         dest: /etc/systemd/system/
+         owner: wildfly
+         group: wildfly
+         mode: '0644'
+     - name: systemd process
+       ansible.builtin.systemd:
+         daemon_reload: yes
+         state: started
+         enabled: yes                          
+  
+  

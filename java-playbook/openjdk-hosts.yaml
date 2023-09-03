@@ -1,0 +1,5 @@
+[appserver]
+172.31.33.79
+[appserver:vars]
+JAVA11=/usr/lib/jvm/java-11-openjdk-amd64/bin
+JAVA8=/usr/lib/jvm/java-8-openjdk-amd64/bin

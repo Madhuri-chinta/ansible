@@ -1,0 +1,125 @@
+---
+- name: Installing wildfly 
+  hosts: appservers
+  become: yes
+  tasks:
+    - name: install openjdk-11-jdk
+      ansible.builtin.package:
+        name: "{{ java_package_name }}"
+        update_cache: yes
+        state: present
+    - name: untar file
+      ansible.builtin.unarchive:
+        src: "{{ tar_package_url }}"
+        dest: /tmp/
+        remote_src: yes
+    - name: creating directory /opt/wildfly
+      ansible.builtin.file:
+        path: "{{ variable_folder }}"
+        state: directory
+        mode: '0755'
+    - name: copy in ansible
+      ansible.builtin.copy:
+        src: /tmp/wildfly-26.1.2.Final/
+        dest: "{{ variable_folder }}"
+        remote_src: yes
+    - name: remove the wildfly-26.1.2.Final from /tmp
+      ansible.builtin.file :
+        path: /tmp/wildfly-26.1.2.Final.
+        state: absent
+    - name: groupadd in ansible
+      ansible.builtin.group:
+        name: "{{ group_name }}"
+        system: true
+    - name: useradd in ansible
+      ansible.builtin.user:
+        name: wildfly
+        shell: /sbin/nologin
+        system: true
+        home: "{{ variable_folder }}"
+        group: "{{ group_name }}"
+    - name: create configuration directory
+      ansible.builtin.file:
+        path: "{{ config_folder }}"
+        state: directory
+        mode: '0755'
+    - name: copy in configuration necessary
+      ansible.builtin.copy:
+        src: "{{ wildfly_config_path }}wildfly.conf"
+        dest: "{{ config_folder }}"
+        remote_src: yes
+    - name: copy in configuration necessary in ubuntu
+      ansible.builtin.copy:
+        src: ubuntu.wildfly.service
+        dest: /etc/systemd/system/
+        remote_src: no
+      when: ansible_facts['distribution'] == "Ubuntu" 
+    - name: copy in configuration necessary in centos
+      ansible.builtin.copy:
+        src: centos.wildfly.service
+        dest: /etc/systemd/system/
+        remote_src: no
+      when: ansible_facts['distribution'] == "CentOS" 
+    - name: copy in configuration necessary
+      ansible.builtin.copy:
+        src: "{{ wildfly_config_path }}launch.sh"
+        dest: /opt/wildfly/bin/
+        remote_src: yes
+    - name: changing file permissions
+      ansible.builtin.command: "chmod +x {{ variable_folder }}/bin/launch.sh"
+    - name: changing owner permissions
+      ansible.builtin.command: chown -R wildfly:wildfly "{{ variable_folder }}"
+    - name: Reload systemd service
+      ansible.builtin.command: systemctl daemon-reload
+    - name: Start and enable WildFly service
+      ansible.builtin.systemd:
+        name: wildfly
+        enabled: yes
+        state: started
+
+
+
+
+
+---
+- name: install apache server
+  hosts: all
+  become: yes
+  tasks:
+    - name: install apache on ubuntu
+      ansible.builtin.apt:
+        name: "{{ app_name1 }}"
+        update_cache: yes
+        state: present   
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: install apache on centos
+      ansible.builtin.yum:
+        name: "{{ app_name3 }}"
+        update_cache: yes
+        state: present  
+      when: ansible_facts['distribution'] == "CentOS"
+    - name: Start and enable httpd service
+      ansible.builtin.systemd:
+        name: "{{ app_name3 }}"
+        enabled: yes
+        state: started
+      when: ansible_facts['distribution'] == "CentOS" 
+    - name: install php modules on ubuntu
+      ansible.builtin.apt:
+        name: "{{ app_name2 }}"
+        state: present
+      when: ansible_facts['distribution'] == "Ubuntu" 
+    - name: install php modules on centos
+      ansible.builtin.yum:
+        name: "{{ app_name2 }}"
+        state: present
+      when: ansible_facts['distribution'] == "CentOS"
+    - name: copy info.php
+      ansible.builtin.copy:
+        src: "{{ info_name }}"
+        dest: "/var/www/html/{{ info_name }}"    
+  
+         
+
+
+

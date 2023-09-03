@@ -1,0 +1,77 @@
+---
+- name: installing haproxy on ubuntu
+  hosts: all
+  become: yes
+  tasks:
+    - name: install software-properties-common
+      ansible.builtin.apt:
+        name: software-properties-common  
+        update_cache: yes
+        state: present
+      when: ansible_facts['distribution'] == "Ubuntu"   
+    - name: Add repository in ubuntu
+      ansible.builtin.apt_repository:
+        repo: ppa:vbernat/haproxy-2.6
+        state: present
+      when: ansible_facts['distribution'] == "Ubuntu"   
+    - name: install haproxy
+      ansible.builtin.package:
+        name: haproxy  
+        update_cache: yes
+        state: present       
+    - name: copy file in ubuntu
+      ansible.builtin.copy:
+        src: ./haproxy-ubuntu.config
+        dest: /etc/haproxy/haproxy.cfg
+        remote_src: no
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: copy file in centos
+      ansible.builtin.copy:
+        src: ./haproxy-centos.config
+        dest: /etc/haproxy/haproxy.cfg
+        remote_src: no
+      when: ansible_facts['distribution'] == "CentOS"       
+    - name: copy file in ubuntu
+      ansible.builtin.copy:
+        src: /etc/haproxy/haproxy.cfg
+        dest: /etc/haproxy/haproxy.cfg-org
+        remote_src: yes
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: copy file in centos
+      ansible.builtin.copy:
+        src: /etc/haproxy/haproxy.cfg
+        dest: /etc/haproxy/haproxy.cfg-org
+        remote_src: yes
+      when: ansible_facts['distribution'] == "CentOS"    
+    - name: start in ubuntu  
+      ansible.builtin.systemd:
+        name: haproxy
+        state: started
+        enabled: yes
+        daemon_reload: yes
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: start in centos 
+      ansible.builtin.systemd:
+        name: haproxy
+        state: started
+        enabled: yes
+        daemon_reload: yes
+      when: ansible_facts['distribution'] == "CentOS"    
+    - name: restart in ubuntu  
+      ansible.builtin.systemd:
+        name: haproxy
+        state: restarted
+        enabled: yes 
+        daemon_reload: yes
+      when: ansible_facts['distribution'] == "Ubuntu"
+    - name: restart in centos  
+      ansible.builtin.systemd:
+        name: haproxy
+        state: restarted
+        enabled: yes 
+        daemon_reload: yes
+      when: ansible_facts['distribution'] == "CentOS"  
+        
+           
+ 
+         

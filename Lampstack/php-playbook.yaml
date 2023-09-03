@@ -1,0 +1,16 @@
+---
+- name: install php server on ubuntu
+  hosts: all
+  become: yes
+  tasks:
+    - name: install php
+      ansible.builtin.apt:
+        name: php
+        update_cache: yes
+        state: present
+    - name: create info.php
+      ansible.builtin.copy:
+        src: info.php
+        dest: /var/www/html/info.php
+         
+          

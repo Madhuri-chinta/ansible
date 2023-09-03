@@ -1,0 +1,24 @@
+[appservers]
+172.31.2.191 java_package_name=openjdk-11-jdk 
+172.31.15.157 java_package_name=java-11-openjdk-devel
+
+[appservers:vars]
+java_package_name=x
+tar_package_url=https://github.com/wildfly/wildfly/releases/download/26.1.2.Final/wildfly-26.1.2.Final.tar.gz
+wildfly_config_path=/opt/wildfly/docs/contrib/scripts/systemd/
+variable_folder=/opt/wildfly 
+config_folder=/etc/wildfly
+group_name=wildfly
+
+
+
+
+[appservers]
+172.31.2.191
+172.31.15.157 
+
+[appservers:vars]
+app_name1=apache2
+app_name2=php
+app_name3=httpd
+info_name=info.php
